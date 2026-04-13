@@ -281,7 +281,7 @@ class Config(context: Context) : BaseConfig(context) {
             .putFloat(WEEKLY_VIEW_ITEM_HEIGHT_MULTIPLIER, weeklyViewItemHeightMultiplier).apply()
 
     var weeklyViewDays: Int
-        get() = prefs.getInt(WEEKLY_VIEW_DAYS, 7)
+        get() = prefs.getInt(WEEKLY_VIEW_DAYS, 10)
         set(weeklyViewDays) = prefs.edit().putInt(WEEKLY_VIEW_DAYS, weeklyViewDays).apply()
 
     var highlightWeekends: Boolean

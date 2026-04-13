@@ -11,7 +11,7 @@ import org.fossify.calendar.models.Event
 import org.joda.time.DateTime
 
 class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
-    private val DAYS_CNT = 42
+    private val DAYS_CNT = ROW_COUNT * COLUMN_COUNT
 
     private val mToday: String = DateTime().toString(Formatter.DAYCODE_PATTERN)
     private var mEvents = ArrayList<Event>()
@@ -21,8 +21,8 @@ class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
     fun updateMonthlyCalendar(targetDate: DateTime) {
         mTargetDate = targetDate
         val targetInfo = DecadCalendarHelper.getMonthInfo(mTargetDate)
-        val startTS = targetInfo.startDate.minusDays(7).seconds()
-        val endTS = targetInfo.endDate.plusDays(7).seconds()
+        val startTS = targetInfo.startDate.minusDays(COLUMN_COUNT).seconds()
+        val endTS = targetInfo.endDate.plusDays(COLUMN_COUNT).seconds()
         context.eventsHelper.getEvents(startTS, endTS) {
             gotEvents(it)
         }
