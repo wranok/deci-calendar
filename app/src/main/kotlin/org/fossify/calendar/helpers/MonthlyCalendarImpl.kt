@@ -115,7 +115,7 @@ class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
     }
 
     private val monthName: String
-        get() = DecadCalendarHelper.getMonthInfo(mTargetDate).title
+        get() = Formatter.getLongMonthYear(context, Formatter.getDayCodeFromDateTime(mTargetDate))
 
     private fun gotEvents(events: ArrayList<Event>) {
         mEvents = events

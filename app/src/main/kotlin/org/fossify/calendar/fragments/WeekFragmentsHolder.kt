@@ -16,6 +16,7 @@ import org.fossify.calendar.adapters.MyWeekPagerAdapter
 import org.fossify.calendar.databinding.FragmentWeekHolderBinding
 import org.fossify.calendar.databinding.WeeklyViewHourTextviewBinding
 import org.fossify.calendar.extensions.*
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.WEEKLY_VIEW
 import org.fossify.calendar.helpers.WEEK_START_DATE_TIME
@@ -158,7 +159,8 @@ class WeekFragmentsHolder : MyFragmentHolder(), WeekFragmentListener {
 
     private fun setupWeeklyActionbarTitle(timestamp: Long) {
         val startDateTime = Formatter.getDateTimeFromTS(timestamp)
-        val month = Formatter.getShortMonthName(requireContext(), startDateTime.monthOfYear)
+        val monthIndex = DecadCalendarHelper.getDecimalDate(startDateTime)?.month ?: startDateTime.monthOfYear
+        val month = Formatter.getShortMonthName(requireContext(), monthIndex)
         binding.weekViewMonthLabel.text = month
         val weekNumber = startDateTime.plusDays(3).weekOfWeekyear
         binding.weekViewWeekNumber.text = "${getString(org.fossify.commons.R.string.week_number_short)} $weekNumber"

@@ -299,7 +299,8 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                 binding.weekLettersHolder,
                 false
             ).root
-            label.text = "$dayLetter\n${curDay.dayOfMonth}"
+            val decimalDay = DecadCalendarHelper.getDecimalDate(curDay)?.day ?: curDay.dayOfMonth
+            label.text = "$dayLetter\n$decimalDay"
             label.setTextColor(textColor)
             if (todayCode == dayCode) {
                 todayColumnIndex = i
