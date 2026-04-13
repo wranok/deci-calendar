@@ -172,7 +172,8 @@ class WidgetMonthlyConfigureActivity : SimpleActivity(), MonthlyCalendar {
                 day28, day29, day30, day31, day32, day33, day34, day35, day36, day37, day38, day39, day40, day41
             )
 
-            for (i in 0 until daysLength) {
+            val renderedDaysCount = minOf(daysLength, dayViews.size)
+            for (i in 0 until renderedDaysCount) {
                 val day = mDays!![i]
                 val dayTextColor = if (config.highlightWeekends && day.isWeekend) {
                     config.highlightWeekendsColor
@@ -185,6 +186,10 @@ class WidgetMonthlyConfigureActivity : SimpleActivity(), MonthlyCalendar {
                     addDayNumber(dayTextColor, day, this)
                     context.addDayEvents(day, this, resources, dividerMargin)
                 }
+            }
+
+            for (i in renderedDaysCount until dayViews.size) {
+                dayViews[i].removeAllViews()
             }
         }
     }

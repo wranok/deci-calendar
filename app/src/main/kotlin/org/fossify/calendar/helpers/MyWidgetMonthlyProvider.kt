@@ -117,7 +117,9 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
             }
         }
 
-        for (i in 0 until len) {
+        val dayCellsCount = ROW_COUNT * 7
+        val renderedDaysCount = minOf(len, dayCellsCount)
+        for (i in 0 until renderedDaysCount) {
             val day = days[i]
 
             val dayTextColor = if (context.config.highlightWeekends && day.isWeekend) {
@@ -161,6 +163,11 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
                 }
                 views.addView(id, newRemoteView)
             }
+        }
+
+        for (i in renderedDaysCount until dayCellsCount) {
+            val id = res.getIdentifier("day_$i", "id", packageName)
+            views.removeAllViews(id)
         }
     }
 
