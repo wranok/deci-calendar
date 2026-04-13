@@ -44,8 +44,6 @@ object DecadCalendarHelper {
     private val DAYS_BEFORE_MONTH_LEAP = intArrayOf(0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335)
     private val DAYS_IN_MONTH_COMMON = intArrayOf(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
     private val DAYS_IN_MONTH_LEAP = intArrayOf(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-    private val DECADE_EPOCH = DateTime(1970, 1, 5, 0, 0) // Monday
-
     fun getMonthInfo(date: DateTime): DecadMonthInfo {
         val yearStart = date.withDayOfYear(1).withTimeAtStartOfDay()
         val dayOfYear = date.dayOfYear
@@ -113,8 +111,9 @@ object DecadCalendarHelper {
     }
 
     fun getDecadeDayIndex(date: DateTime): Int {
-        val daysFromEpoch = ((date.withTimeAtStartOfDay().millis - DECADE_EPOCH.millis) / (24 * 60 * 60 * 1000L)).toInt()
-        return ((daysFromEpoch % DAYS_IN_DECADE) + DAYS_IN_DECADE) % DAYS_IN_DECADE
+        val monthInfo = getMonthInfo(date)
+        val daysFromMonthStart = ((date.withTimeAtStartOfDay().millis - monthInfo.startDate.millis) / (24 * 60 * 60 * 1000L)).toInt()
+        return ((daysFromMonthStart % DAYS_IN_DECADE) + DAYS_IN_DECADE) % DAYS_IN_DECADE
     }
 
     fun getDecadeDayName(date: DateTime): String = DECADE_DAY_NAMES[getDecadeDayIndex(date)]
