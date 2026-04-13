@@ -17,6 +17,7 @@ import org.fossify.calendar.databinding.WidgetConfigMonthlyBinding
 import org.fossify.calendar.extensions.addDayEvents
 import org.fossify.calendar.extensions.config
 import org.fossify.calendar.extensions.isWeekendIndex
+import org.fossify.calendar.helpers.COLUMN_COUNT
 import org.fossify.calendar.helpers.MonthlyCalendarImpl
 import org.fossify.calendar.helpers.MyWidgetMonthlyProvider
 import org.fossify.calendar.interfaces.MonthlyCalendar
@@ -158,7 +159,8 @@ class WidgetMonthlyConfigureActivity : SimpleActivity(), MonthlyCalendar {
                 arrayOf(weekNum0, weekNum1, weekNum2, weekNum3, weekNum4, weekNum5).forEachIndexed { index, textView ->
                     textView.apply {
                         @SuppressLint("SetTextI18n")
-                        text = "${mDays!![index * 7 + 3].weekOfYear}:"
+                        val decadeNumber = mDays!![index * COLUMN_COUNT + COLUMN_COUNT / 2].weekOfYear
+                        text = if (decadeNumber > 0) "$decadeNumber:" else ""
                         setTextColor(mTextColor)
                         beVisible()
                     }

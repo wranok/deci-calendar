@@ -67,7 +67,8 @@ class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
 
             val newDay = if (isThisMonth) currentMonth.startDate.plusDays(value - 1) else cursorDate
             val dayCode = Formatter.getDayCodeFromDateTime(newDay)
-            val day = DayMonthly(value, isThisMonth, isToday(newDay), dayCode, newDay.weekOfWeekyear, ArrayList(), i, context.isWeekendIndex(i))
+            val decadeNumber = DecadCalendarHelper.getDecadeNumber(newDay) ?: 0
+            val day = DayMonthly(value, isThisMonth, isToday(newDay), dayCode, decadeNumber, ArrayList(), i, context.isWeekendIndex(i))
             days.add(day)
 
             value++

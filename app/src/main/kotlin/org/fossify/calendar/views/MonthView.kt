@@ -319,8 +319,8 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
             weekNumberPaint.color = if (weekDays.any { it.isToday && !isPrintVersion }) primaryColor else textColor
 
             // fourth day of the week determines the week of the year number
-            val weekOfYear = days.getOrNull(i * COLUMN_COUNT + 3)?.weekOfYear ?: 1
-            val id = "$weekOfYear:"
+            val weekOfYear = days.getOrNull(i * COLUMN_COUNT + COLUMN_COUNT / 2)?.weekOfYear ?: 0
+            val id = if (weekOfYear > 0) "$weekOfYear:" else ""
             val horizontalMarginFactor = 0.5f
             val xPos = horizontalOffset * horizontalMarginFactor
             val yPos = i * dayHeight + weekDaysLetterHeight
