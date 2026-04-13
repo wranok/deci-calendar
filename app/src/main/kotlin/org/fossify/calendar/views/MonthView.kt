@@ -10,6 +10,7 @@ import android.view.View
 import org.fossify.calendar.R
 import org.fossify.calendar.extensions.*
 import org.fossify.calendar.helpers.COLUMN_COUNT
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.ROW_COUNT
 import org.fossify.calendar.models.DayMonthly
@@ -314,11 +315,11 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
         val weekNumberPaint = Paint(textPaint)
 
         for (i in 0 until ROW_COUNT) {
-            val weekDays = days.subList(i * 7, i * 7 + 7)
+            val weekDays = days.subList(i * COLUMN_COUNT, i * COLUMN_COUNT + COLUMN_COUNT)
             weekNumberPaint.color = if (weekDays.any { it.isToday && !isPrintVersion }) primaryColor else textColor
 
             // fourth day of the week determines the week of the year number
-            val weekOfYear = days.getOrNull(i * 7 + 3)?.weekOfYear ?: 1
+            val weekOfYear = days.getOrNull(i * COLUMN_COUNT + 3)?.weekOfYear ?: 1
             val id = "$weekOfYear:"
             val horizontalMarginFactor = 0.5f
             val xPos = horizontalOffset * horizontalMarginFactor
@@ -328,7 +329,7 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
     }
 
     private fun measureDaySize(canvas: Canvas) {
-        dayWidth = (canvas.width - horizontalOffset) / 7f
+        dayWidth = (canvas.width - horizontalOffset) / COLUMN_COUNT.toFloat()
         dayHeight = (canvas.height - weekDaysLetterHeight) / ROW_COUNT.toFloat()
         val availableHeightForEvents = dayHeight.toInt() - weekDaysLetterHeight
         maxEventsPerDay = availableHeightForEvents / eventTitleHeight
@@ -336,11 +337,11 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
 
     private fun drawEvent(event: MonthViewEvent, canvas: Canvas) {
         var verticalOffset = 0
-        for (i in 0 until min(event.daysCnt, 7 - event.startDayIndex % 7)) {
+        for (i in 0 until min(event.daysCnt, COLUMN_COUNT - event.startDayIndex % COLUMN_COUNT)) {
             verticalOffset = max(verticalOffset, dayVerticalOffsets[event.startDayIndex + i])
         }
-        val xPos = event.startDayIndex % 7 * dayWidth + horizontalOffset
-        val yPos = (event.startDayIndex / 7) * dayHeight
+        val xPos = event.startDayIndex % COLUMN_COUNT * dayWidth + horizontalOffset
+        val yPos = (event.startDayIndex / COLUMN_COUNT) * dayHeight
         val xPosCenter = xPos + dayWidth / 2
 
         if (verticalOffset - eventTitleHeight * 2 > dayHeight) {
@@ -358,8 +359,8 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
         val bgBottom = backgroundY + smallPadding * 2
         if (bgRight > canvas.width.toFloat()) {
             bgRight = canvas.width.toFloat() - smallPadding
-            val newStartDayIndex = (event.startDayIndex / 7 + 1) * 7
-            if (newStartDayIndex < 42) {
+            val newStartDayIndex = (event.startDayIndex / COLUMN_COUNT + 1) * COLUMN_COUNT
+            if (newStartDayIndex < ROW_COUNT * COLUMN_COUNT) {
                 val newEvent = event.copy(startDayIndex = newStartDayIndex, daysCnt = event.daysCnt - (newStartDayIndex - event.startDayIndex))
                 drawEvent(newEvent, canvas)
             }
@@ -380,7 +381,7 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
 
         drawEventTitle(event, canvas, xPos + taskIconWidth, yPos + verticalOffset, bgRight - bgLeft - smallPadding - taskIconWidth, specificEventTitlePaint)
 
-        for (i in 0 until min(event.daysCnt, 7 - event.startDayIndex % 7)) {
+        for (i in 0 until min(event.daysCnt, COLUMN_COUNT - event.startDayIndex % COLUMN_COUNT)) {
             dayVerticalOffsets.put(event.startDayIndex + i, verticalOffset + eventTitleHeight + smallPadding * 2)
         }
     }
@@ -453,9 +454,7 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
     }
 
     private fun initWeekDayLetters() {
-        dayLetters = context.withFirstDayOfWeekToFront(
-            context.resources.getStringArray(org.fossify.commons.R.array.week_days_short).toList()
-        )
+        dayLetters = ArrayList(DecadCalendarHelper.getDecadeDayShortNames())
     }
 
     private fun setupCurrentDayOfWeekIndex() {

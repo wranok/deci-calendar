@@ -79,7 +79,7 @@ class WeekFragmentsHolder : MyFragmentHolder(), WeekFragmentListener {
         binding.weekViewHoursScrollview.setOnTouchListener { _, _ -> true }
 
         binding.weekViewSeekbar.apply {
-            progress = context?.config?.weeklyViewDays ?: 7
+            progress = context?.config?.weeklyViewDays ?: 10
             max = MAX_SEEKBAR_VALUE
 
             onSeekBarChangeListener {
@@ -133,7 +133,7 @@ class WeekFragmentsHolder : MyFragmentHolder(), WeekFragmentListener {
         val itemHeight = requireContext().getWeeklyViewItemHeight().toInt()
         binding.weekViewHoursHolder.removeAllViews()
         val hourDateTime = DateTime().withDate(2000, 1, 1).withTime(0, 0, 0, 0)
-        for (i in 1..23) {
+        for (i in 1..9) {
             val formattedHours = Formatter.getTime(requireContext(), hourDateTime.withHourOfDay(i))
             WeeklyViewHourTextviewBinding.inflate(layoutInflater).root.apply {
                 text = formattedHours
@@ -208,7 +208,7 @@ class WeekFragmentsHolder : MyFragmentHolder(), WeekFragmentListener {
             (binding.weekViewSeekbar.layoutParams as RelativeLayout.LayoutParams).removeRule(RelativeLayout.START_OF)
         }
 
-        updateDaysCount(context?.config?.weeklyViewDays ?: 7)
+        updateDaysCount(context?.config?.weeklyViewDays ?: 10)
         binding.weekViewDaysCount.setTextColor(requireContext().getProperTextColor())
     }
 

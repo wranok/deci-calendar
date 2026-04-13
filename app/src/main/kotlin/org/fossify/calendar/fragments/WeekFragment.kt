@@ -48,6 +48,7 @@ import org.fossify.calendar.helpers.EVENT_ID
 import org.fossify.calendar.helpers.EVENT_OCCURRENCE_TS
 import org.fossify.calendar.helpers.FLAG_ALL_DAY
 import org.fossify.calendar.helpers.Formatter
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.helpers.IS_TASK_COMPLETED
 import org.fossify.calendar.helpers.NEW_EVENT_SET_HOUR_DURATION
 import org.fossify.calendar.helpers.NEW_EVENT_START_TS
@@ -280,14 +281,11 @@ class WeekFragment : Fragment(), WeeklyCalendar {
         binding.weekLettersHolder.removeAllViews()
         for (i in 0 until config.weeklyViewDays) {
             val dayCode = Formatter.getDayCodeFromDateTime(curDay)
-            val labelIDs = if (useLongerDayLabels) {
-                org.fossify.commons.R.array.week_days_short
+            val dayLetter = if (useLongerDayLabels) {
+                DecadCalendarHelper.getDecadeDayShortName(curDay)
             } else {
-                org.fossify.commons.R.array.week_day_letters
+                DecadCalendarHelper.getDecadeDayShortName(curDay)
             }
-
-            val dayLetters = res.getStringArray(labelIDs).toMutableList() as ArrayList<String>
-            val dayLetter = dayLetters[curDay.dayOfWeek - 1]
 
             val textColor = when {
                 !isPrintVersion && todayCode == dayCode -> primaryColor

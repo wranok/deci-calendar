@@ -10,7 +10,7 @@ import java.util.UUID
 
 const val STORED_LOCALLY_ONLY = 0
 const val ROW_COUNT = 6
-const val COLUMN_COUNT = 7
+const val COLUMN_COUNT = 10
 const val SCHEDULE_CALDAV_REQUEST_CODE = 10000
 const val AUTOMATIC_BACKUP_REQUEST_CODE = 10001
 const val DUMMY_ALARM_REQUEST_CODE = 10002
