@@ -17,9 +17,10 @@ object Formatter {
 
     fun getDateFromCode(context: Context, dayCode: String, shortMonth: Boolean = false): String {
         val dateTime = getDateTimeFromCode(dayCode)
-        val day = dateTime.toString(DAY_PATTERN)
+        val decimalDate = DecadCalendarHelper.getDecimalDate(dateTime)
+        val day = decimalDate?.day?.toString() ?: dateTime.toString(DAY_PATTERN)
         val year = dateTime.toString(YEAR_PATTERN)
-        val monthIndex = Integer.valueOf(dayCode.substring(4, 6))
+        val monthIndex = decimalDate?.month ?: Integer.valueOf(dayCode.substring(4, 6))
         var month = getMonthName(context, monthIndex)
         if (shortMonth) {
             month = month.substring(0, Math.min(month.length, 3))
@@ -50,7 +51,8 @@ object Formatter {
 
     fun getLongMonthYear(context: Context, dayCode: String): String {
         val dateTime = getDateTimeFromCode(dayCode)
-        val monthIndex = Integer.valueOf(dayCode.substring(4, 6))
+        val decimalDate = DecadCalendarHelper.getDecimalDate(dateTime)
+        val monthIndex = decimalDate?.month ?: Integer.valueOf(dayCode.substring(4, 6))
         val month = getMonthName(context, monthIndex)
         val year = dateTime.toString(YEAR_PATTERN)
         var date = month
@@ -65,9 +67,10 @@ object Formatter {
     fun getDate(context: Context, dateTime: DateTime, addDayOfWeek: Boolean = true) = getDayTitle(context, getDayCodeFromDateTime(dateTime), addDayOfWeek)
 
     fun getFullDate(context: Context, dateTime: DateTime): String {
-        val day = dateTime.toString(DAY_PATTERN)
+        val decimalDate = DecadCalendarHelper.getDecimalDate(dateTime)
+        val day = decimalDate?.day?.toString() ?: dateTime.toString(DAY_PATTERN)
         val year = dateTime.toString(YEAR_PATTERN)
-        val monthIndex = dateTime.monthOfYear
+        val monthIndex = decimalDate?.month ?: dateTime.monthOfYear
         val month = getMonthName(context, monthIndex)
         return "$month $day $year"
     }
