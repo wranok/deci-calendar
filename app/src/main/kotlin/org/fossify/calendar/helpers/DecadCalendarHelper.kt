@@ -123,6 +123,17 @@ object DecadCalendarHelper {
 
     fun getDecadeDayShortNames(): List<String> = DECADE_DAY_SHORT_NAMES
 
+    fun getDecadeNumber(date: DateTime): Int? {
+        val leapExtra = if (date.year().isLeap) 1 else 0
+        val specialDaysLength = START_OFFSET_DAYS + leapExtra
+        val shiftedDayOfYear = date.dayOfYear - specialDaysLength
+        if (shiftedDayOfYear <= 0) {
+            return null
+        }
+
+        return ((shiftedDayOfYear - 1) / DAYS_IN_DECADE) + 1
+    }
+
     fun getDecimalDate(date: DateTime): DecimalDate? {
         val isLeap = date.year().isLeap
         val shift = if (isLeap) START_OFFSET_DAYS + 1 else START_OFFSET_DAYS

@@ -108,7 +108,7 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
 
         for (i in 0..5) {
             val id = res.getIdentifier("week_num_$i", "id", packageName)
-            val decadeNumber = days.getOrNull(i * COLUMN_COUNT + COLUMN_COUNT / 2)?.let { ((it.value - 1) / DecadCalendarHelper.DAYS_IN_DECADE) + 1 } ?: 0
+            val decadeNumber = days.getOrNull(i * COLUMN_COUNT + COLUMN_COUNT / 2)?.weekOfYear ?: 0
             views.apply {
                 setText(id, if (decadeNumber > 0) "$decadeNumber:" else "")
                 setTextColor(id, textColor)
