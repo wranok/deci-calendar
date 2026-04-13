@@ -28,7 +28,7 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
     private val NEW_EVENT = "new_event"
 
     companion object {
-        private var targetDate = DateTime.now().withDayOfMonth(1)
+        private var targetDate = DecadCalendarHelper.getMonthStart(DateTime.now())
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -78,18 +78,18 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
     }
 
     private fun getPrevMonth(context: Context) {
-        targetDate = targetDate!!.minusMonths(1)
-        MonthlyCalendarImpl(monthlyCalendar, context).getMonth(targetDate!!)
+        targetDate = DecadCalendarHelper.getPreviousMonthStart(targetDate)
+        MonthlyCalendarImpl(monthlyCalendar, context).getMonth(targetDate)
     }
 
     private fun getNextMonth(context: Context) {
-        targetDate = targetDate!!.plusMonths(1)
-        MonthlyCalendarImpl(monthlyCalendar, context).getMonth(targetDate!!)
+        targetDate = DecadCalendarHelper.getNextMonthStart(targetDate)
+        MonthlyCalendarImpl(monthlyCalendar, context).getMonth(targetDate)
     }
 
     private fun goToToday(context: Context) {
-        targetDate = DateTime.now().withDayOfMonth(1)
-        MonthlyCalendarImpl(monthlyCalendar, context).getMonth(targetDate!!)
+        targetDate = DecadCalendarHelper.getMonthStart(DateTime.now())
+        MonthlyCalendarImpl(monthlyCalendar, context).getMonth(targetDate)
     }
 
     private fun updateDays(context: Context, views: RemoteViews, days: List<DayMonthly>) {
@@ -209,7 +209,7 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
                 bmp = resources.getColoredBitmap(org.fossify.commons.R.drawable.ic_plus_vector, textColor)
                 views.setImageViewBitmap(R.id.top_new_event, bmp)
 
-                val shouldGoToTodayBeVisible = currTargetDate.withTime(0, 0, 0, 0) != DateTime.now().withDayOfMonth(1).withTime(0, 0, 0, 0)
+                val shouldGoToTodayBeVisible = currTargetDate.withTime(0, 0, 0, 0) != DecadCalendarHelper.getMonthStart(DateTime.now()).withTime(0, 0, 0, 0)
                 views.setVisibleIf(R.id.top_go_to_today, shouldGoToTodayBeVisible)
 
                 updateDayLabels(context, views, resources, textColor)
