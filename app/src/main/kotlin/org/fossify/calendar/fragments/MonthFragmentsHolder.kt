@@ -11,8 +11,8 @@ import androidx.viewpager.widget.ViewPager
 import org.fossify.calendar.activities.MainActivity
 import org.fossify.calendar.adapters.MyMonthPagerAdapter
 import org.fossify.calendar.databinding.FragmentMonthsHolderBinding
-import org.fossify.calendar.extensions.getMonthCode
 import org.fossify.calendar.helpers.DAY_CODE
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.MONTHLY_VIEW
 import org.fossify.calendar.interfaces.NavigationListener
@@ -78,9 +78,22 @@ class MonthFragmentsHolder : MyFragmentHolder(), NavigationListener {
 
     private fun getMonths(code: String): List<String> {
         val months = ArrayList<String>(PREFILLED_MONTHS)
-        val today = Formatter.getDateTimeFromCode(code).withDayOfMonth(1)
-        for (i in -PREFILLED_MONTHS / 2..PREFILLED_MONTHS / 2) {
-            months.add(Formatter.getDayCodeFromDateTime(today.plusMonths(i)))
+        val centerMonthStart = DecadCalendarHelper.getMonthStart(Formatter.getDateTimeFromCode(code))
+
+        val previousMonths = ArrayDeque<String>(PREFILLED_MONTHS / 2)
+        var cursor = centerMonthStart
+        repeat(PREFILLED_MONTHS / 2) {
+            cursor = DecadCalendarHelper.getPreviousMonthStart(cursor)
+            previousMonths.addFirst(Formatter.getDayCodeFromDateTime(cursor))
+        }
+
+        months.addAll(previousMonths)
+        months.add(Formatter.getDayCodeFromDateTime(centerMonthStart))
+
+        cursor = centerMonthStart
+        repeat(PREFILLED_MONTHS / 2) {
+            cursor = DecadCalendarHelper.getNextMonthStart(cursor)
+            months.add(Formatter.getDayCodeFromDateTime(cursor))
         }
 
         return months
@@ -134,7 +147,9 @@ class MonthFragmentsHolder : MyFragmentHolder(), NavigationListener {
         (viewPager.adapter as? MyMonthPagerAdapter)?.updateCalendars(viewPager.currentItem)
     }
 
-    override fun shouldGoToTodayBeVisible() = currentDayCode.getMonthCode() != todayDayCode.getMonthCode()
+    override fun shouldGoToTodayBeVisible() =
+        DecadCalendarHelper.getMonthKey(Formatter.getDateTimeFromCode(currentDayCode)) !=
+            DecadCalendarHelper.getMonthKey(Formatter.getDateTimeFromCode(todayDayCode))
 
     override fun getNewEventDayCode() = if (shouldGoToTodayBeVisible()) currentDayCode else todayDayCode
 
