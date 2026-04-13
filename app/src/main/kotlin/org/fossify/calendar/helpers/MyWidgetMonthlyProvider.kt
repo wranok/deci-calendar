@@ -19,7 +19,6 @@ import org.fossify.calendar.models.Event
 import org.fossify.commons.extensions.*
 import org.fossify.commons.helpers.MEDIUM_ALPHA
 import org.joda.time.DateTime
-import org.joda.time.DateTimeConstants
 
 class MyWidgetMonthlyProvider : AppWidgetProvider() {
     private val PREV = "prev"
@@ -93,7 +92,7 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
     }
 
     private fun updateDays(context: Context, views: RemoteViews, days: List<DayMonthly>) {
-        val displayWeekNumbers = context.config.showWeekNumbers
+        val displayDecadeNumbers = context.config.showWeekNumbers
         val textColor = context.config.widgetTextColor
         val dimPastEvents = context.config.dimPastEvents
         val dimCompletedTasks = context.config.dimCompletedTasks
@@ -104,20 +103,21 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
         views.apply {
             setTextColor(R.id.week_num, textColor)
             setTextSize(R.id.week_num, smallerFontSize)
-            setViewVisibility(R.id.week_num, if (displayWeekNumbers) View.VISIBLE else View.GONE)
+            setViewVisibility(R.id.week_num, if (displayDecadeNumbers) View.VISIBLE else View.GONE)
         }
 
         for (i in 0..5) {
             val id = res.getIdentifier("week_num_$i", "id", packageName)
+            val decadeNumber = days.getOrNull(i * COLUMN_COUNT + COLUMN_COUNT / 2)?.let { ((it.value - 1) / DecadCalendarHelper.DAYS_IN_DECADE) + 1 } ?: 0
             views.apply {
-                setText(id, "${days[i * 7 + 3].weekOfYear}:")    // fourth day of the week matters at determining week of the year
+                setText(id, if (decadeNumber > 0) "$decadeNumber:" else "")
                 setTextColor(id, textColor)
                 setTextSize(id, smallerFontSize)
-                setViewVisibility(id, if (displayWeekNumbers) View.VISIBLE else View.GONE)
+                setViewVisibility(id, if (displayDecadeNumbers) View.VISIBLE else View.GONE)
             }
         }
 
-        val dayCellsCount = ROW_COUNT * 7
+        val dayCellsCount = ROW_COUNT * COLUMN_COUNT
         val renderedDaysCount = minOf(len, dayCellsCount)
         for (i in 0 until renderedDaysCount) {
             val day = days[i]
@@ -239,13 +239,11 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
     }
 
     private fun updateDayLabels(context: Context, views: RemoteViews, resources: Resources, textColor: Int) {
-        val config = context.config
-        val firstDayOfWeek = config.firstDayOfWeek
         val smallerFontSize = context.getWidgetFontSize()
         val packageName = context.packageName
-        val letters = context.resources.getStringArray(org.fossify.commons.R.array.week_days_short)
+        val letters = DecadCalendarHelper.getDecadeDayShortNames()
 
-        for (i in 0..6) {
+        for (i in 0 until COLUMN_COUNT) {
             val id = resources.getIdentifier("label_$i", "id", packageName)
             val dayTextColor = if (context.config.highlightWeekends && context.isWeekendIndex(i)) {
                 context.config.highlightWeekendsColor
@@ -255,13 +253,7 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
 
             views.setTextColor(id, dayTextColor)
             views.setTextSize(id, smallerFontSize)
-
-            var index = i
-            if (firstDayOfWeek != DateTimeConstants.MONDAY) {
-                index = (index + firstDayOfWeek - 1) % 7
-            }
-
-            views.setText(id, letters[index])
+            views.setText(id, letters[i])
         }
     }
 }

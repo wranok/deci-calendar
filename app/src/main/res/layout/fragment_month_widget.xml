@@ -164,23 +164,6 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/month_line_holder_2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/week_num_1"
-                style="@style/WeekNumberStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone" />
-
             <LinearLayout
                 android:id="@+id/day_7"
                 android:layout_width="0dp"
@@ -204,6 +187,23 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/month_line_holder_2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/week_num_1"
+                style="@style/WeekNumberStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/day_10"
@@ -236,23 +236,6 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/month_line_holder_3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/week_num_2"
-                style="@style/WeekNumberStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/day_14"
@@ -302,6 +285,23 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/month_line_holder_3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/week_num_2"
+                style="@style/WeekNumberStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/day_20"
                 android:layout_width="0dp"
@@ -309,23 +309,6 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/month_line_holder_4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/week_num_3"
-                style="@style/WeekNumberStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/day_21"
@@ -383,23 +366,6 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/month_line_holder_5"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/week_num_4"
-                style="@style/WeekNumberStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone" />
-
             <LinearLayout
                 android:id="@+id/day_28"
                 android:layout_width="0dp"
@@ -415,6 +381,23 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/month_line_holder_4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/week_num_3"
+                style="@style/WeekNumberStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/day_30"
@@ -456,23 +439,6 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/month_line_holder_6"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/week_num_5"
-                style="@style/WeekNumberStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone" />
-
             <LinearLayout
                 android:id="@+id/day_35"
                 android:layout_width="0dp"
@@ -513,6 +479,23 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/month_line_holder_5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/week_num_4"
+                style="@style/WeekNumberStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/day_40"
                 android:layout_width="0dp"
@@ -523,6 +506,167 @@
 
             <LinearLayout
                 android:id="@+id/day_41"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_42"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_43"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_44"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_45"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_46"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_47"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_48"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_49"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/month_line_holder_6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/week_num_5"
+                style="@style/WeekNumberStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/day_50"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_51"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_52"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_53"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_54"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_55"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_56"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_57"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_58"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/day_59"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
