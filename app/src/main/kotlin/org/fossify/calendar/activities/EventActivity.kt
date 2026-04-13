@@ -1927,7 +1927,7 @@ class EventActivity : SimpleActivity() {
         minutePicker.setFormatter { "%02d".format(it) }
 
         AlertDialog.Builder(this)
-            .setTitle(getString(org.fossify.commons.R.string.select_time))
+            .setTitle(getString(R.string.select_time))
             .setView(contentView)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val (hour, minute) = DecadCalendarHelper.getStandardTimeFromDecimal(hourPicker.value, minutePicker.value)
