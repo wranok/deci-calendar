@@ -63,6 +63,7 @@ import org.fossify.calendar.helpers.REMINDER_OFF
 import org.fossify.calendar.helpers.SCHEDULE_CALDAV_REQUEST_CODE
 import org.fossify.calendar.helpers.WEEK
 import org.fossify.calendar.helpers.YEAR
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.helpers.generateImportId
 import org.fossify.calendar.helpers.getActivityToOpen
 import org.fossify.calendar.helpers.getNextAutoBackupTime
@@ -1046,27 +1047,12 @@ fun <T> Context.withFirstDayOfWeekToFront(weekItems: Collection<T>): ArrayList<T
 }
 
 fun Context.getProperDayIndexInWeek(date: DateTime): Int {
-    val firstDayOfWeek = config.firstDayOfWeek
-    val dayOfWeek = date.dayOfWeek
-    val dayIndex = if (dayOfWeek >= firstDayOfWeek) {
-        dayOfWeek - firstDayOfWeek
-    } else {
-        dayOfWeek + (7 - firstDayOfWeek)
-    }
-
-    return dayIndex
+    return DecadCalendarHelper.getDecadeDayIndex(date)
 }
 
 fun Context.isWeekendIndex(dayIndex: Int): Boolean {
-    val firstDayOfWeek = config.firstDayOfWeek
-    val shiftedIndex = (dayIndex + firstDayOfWeek) % 7
-    val dayOfWeek = if (shiftedIndex == 0) {
-        DateTimeConstants.SUNDAY
-    } else {
-        shiftedIndex
-    }
-
-    return isWeekend(dayOfWeek)
+    val normalizedIndex = ((dayIndex % DecadCalendarHelper.DAYS_IN_DECADE) + DecadCalendarHelper.DAYS_IN_DECADE) % DecadCalendarHelper.DAYS_IN_DECADE
+    return normalizedIndex == DecadCalendarHelper.DAYS_IN_DECADE - 1
 }
 
 fun Context.isTaskCompleted(event: Event): Boolean {

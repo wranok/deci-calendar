@@ -16,6 +16,7 @@ import org.fossify.calendar.extensions.getViewBitmap
 import org.fossify.calendar.extensions.printBitmap
 import org.fossify.calendar.helpers.YEAR_LABEL
 import org.fossify.calendar.helpers.YearlyCalendarImpl
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.interfaces.NavigationListener
 import org.fossify.calendar.interfaces.YearlyCalendar
 import org.fossify.calendar.models.DayYearly
@@ -38,21 +39,6 @@ class YearFragment : Fragment(), YearlyCalendar {
     private lateinit var topNavigationBinding: TopNavigationBinding
     private lateinit var monthHolders: List<SmallMonthViewHolderBinding>
 
-    private val monthResIds = arrayOf(
-        org.fossify.commons.R.string.january,
-        org.fossify.commons.R.string.february,
-        org.fossify.commons.R.string.march,
-        org.fossify.commons.R.string.april,
-        org.fossify.commons.R.string.may,
-        org.fossify.commons.R.string.june,
-        org.fossify.commons.R.string.july,
-        org.fossify.commons.R.string.august,
-        org.fossify.commons.R.string.september,
-        org.fossify.commons.R.string.october,
-        org.fossify.commons.R.string.november,
-        org.fossify.commons.R.string.december
-    )
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentYearBinding.inflate(inflater, container, false)
         topNavigationBinding = TopNavigationBinding.bind(binding.root)
@@ -61,7 +47,7 @@ class YearFragment : Fragment(), YearlyCalendar {
             binding.month7Holder, binding.month8Holder, binding.month9Holder, binding.month10Holder, binding.month11Holder, binding.month12Holder
         ).apply {
             forEachIndexed { index, it ->
-                it.monthLabel.text = getString(monthResIds[index])
+                it.monthLabel.text = "Month ${index + 1}"
             }
         }
 
@@ -94,9 +80,9 @@ class YearFragment : Fragment(), YearlyCalendar {
     }
 
     private fun setupMonths() {
-        val dateTime = DateTime().withYear(mYear).withHourOfDay(12)
         monthHolders.forEachIndexed { index, monthHolder ->
             val monthOfYear = index + 1
+            val monthInfo = DecadCalendarHelper.getMonthInfo(mYear, monthOfYear)
             val monthView = monthHolder.smallMonthView
             val curTextColor = when {
                 isPrintVersion -> resources.getColor(org.fossify.commons.R.color.theme_light_text_color)
@@ -104,12 +90,10 @@ class YearFragment : Fragment(), YearlyCalendar {
             }
 
             monthHolder.monthLabel.setTextColor(curTextColor)
-            val firstDayOfMonth = dateTime.withMonthOfYear(monthOfYear).withDayOfMonth(1)
-            monthView.firstDay = requireContext().getProperDayIndexInWeek(firstDayOfMonth)
-            val numberOfDays = dateTime.withMonthOfYear(monthOfYear).dayOfMonth().maximumValue
-            monthView.setDays(numberOfDays)
+            monthView.firstDay = requireContext().getProperDayIndexInWeek(monthInfo.startDate)
+            monthView.setDays(monthInfo.length)
             monthView.setOnClickListener {
-                (activity as MainActivity).openMonthFromYearly(DateTime().withDate(mYear, monthOfYear, 1))
+                (activity as MainActivity).openMonthFromYearly(monthInfo.startDate)
             }
         }
 
@@ -155,10 +139,15 @@ class YearFragment : Fragment(), YearlyCalendar {
 
     private fun markCurrentMonth(now: DateTime) {
         if (now.year == mYear) {
-            val monthOfYear = now.monthOfYear
+            val currentInfo = DecadCalendarHelper.getMonthInfo(now)
+            val monthOfYear = currentInfo.monthIndex
+            if (monthOfYear !in 1..monthHolders.size) {
+                return
+            }
             val monthHolder = monthHolders[monthOfYear - 1]
             monthHolder.monthLabel.setTextColor(requireContext().getProperPrimaryColor())
-            monthHolder.smallMonthView.todaysId = now.dayOfMonth
+            monthHolder.smallMonthView.todaysId =
+                ((now.withTimeAtStartOfDay().millis - currentInfo.startDate.millis) / (24 * 60 * 60 * 1000L)).toInt() + 1
         }
     }
 

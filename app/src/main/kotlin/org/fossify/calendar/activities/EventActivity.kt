@@ -1,7 +1,7 @@
 package org.fossify.calendar.activities
 
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
@@ -23,9 +23,6 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
-import com.google.android.material.timepicker.TimeFormat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.fossify.calendar.R
@@ -74,6 +71,7 @@ import org.fossify.calendar.helpers.EVENT_COLOR
 import org.fossify.calendar.helpers.EVENT_ID
 import org.fossify.calendar.helpers.EVENT_OCCURRENCE_TS
 import org.fossify.calendar.helpers.FLAG_ALL_DAY
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.IS_DUPLICATE_INTENT
 import org.fossify.calendar.helpers.IS_NEW_EVENT
@@ -130,10 +128,8 @@ import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.getStringValue
-import org.fossify.commons.extensions.getTimePickerDialogTheme
 import org.fossify.commons.extensions.hasPermission
 import org.fossify.commons.extensions.hideKeyboard
-import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.isGone
 import org.fossify.commons.extensions.isVisible
 import org.fossify.commons.extensions.launchActivityIntent
@@ -1885,34 +1881,8 @@ class EventActivity : SimpleActivity() {
 
     private fun setupStartTime() {
         hideKeyboard()
-        if (isDynamicTheme()) {
-            val timeFormat = if (config.use24HourFormat) {
-                TimeFormat.CLOCK_24H
-            } else {
-                TimeFormat.CLOCK_12H
-            }
-
-            val timePicker = MaterialTimePicker.Builder()
-                .setTimeFormat(timeFormat)
-                .setHour(mEventStartDateTime.hourOfDay)
-                .setMinute(mEventStartDateTime.minuteOfHour)
-                .setInputMode(INPUT_MODE_CLOCK)
-                .build()
-
-            timePicker.addOnPositiveButtonClickListener {
-                timeSet(timePicker.hour, timePicker.minute, true)
-            }
-
-            timePicker.show(supportFragmentManager, "")
-        } else {
-            TimePickerDialog(
-                this,
-                getTimePickerDialogTheme(),
-                startTimeSetListener,
-                mEventStartDateTime.hourOfDay,
-                mEventStartDateTime.minuteOfHour,
-                config.use24HourFormat
-            ).show()
+        showDecimalTimePicker(mEventStartDateTime.hourOfDay, mEventStartDateTime.minuteOfHour) { hour, minute ->
+            timeSet(hour, minute, true)
         }
     }
 
@@ -1933,35 +1903,38 @@ class EventActivity : SimpleActivity() {
 
     private fun setupEndTime() {
         hideKeyboard()
-        if (isDynamicTheme()) {
-            val timeFormat = if (config.use24HourFormat) {
-                TimeFormat.CLOCK_24H
-            } else {
-                TimeFormat.CLOCK_12H
-            }
-
-            val timePicker = MaterialTimePicker.Builder()
-                .setTimeFormat(timeFormat)
-                .setHour(mEventEndDateTime.hourOfDay)
-                .setMinute(mEventEndDateTime.minuteOfHour)
-                .setInputMode(INPUT_MODE_CLOCK)
-                .build()
-
-            timePicker.addOnPositiveButtonClickListener {
-                timeSet(timePicker.hour, timePicker.minute, false)
-            }
-
-            timePicker.show(supportFragmentManager, "")
-        } else {
-            TimePickerDialog(
-                this,
-                getTimePickerDialogTheme(),
-                endTimeSetListener,
-                mEventEndDateTime.hourOfDay,
-                mEventEndDateTime.minuteOfHour,
-                config.use24HourFormat
-            ).show()
+        showDecimalTimePicker(mEventEndDateTime.hourOfDay, mEventEndDateTime.minuteOfHour) { hour, minute ->
+            timeSet(hour, minute, false)
         }
+    }
+
+    private fun showDecimalTimePicker(currentHour: Int, currentMinute: Int, callback: (hour: Int, minute: Int) -> Unit) {
+        val (decimalHour, decimalMinute) = DecadCalendarHelper.getDecimalTime(currentHour, currentMinute)
+        val contentView = layoutInflater.inflate(R.layout.dialog_decimal_time_picker, null)
+        val hourPicker = contentView.findViewById<android.widget.NumberPicker>(R.id.decimal_hour_picker)
+        val minutePicker = contentView.findViewById<android.widget.NumberPicker>(R.id.decimal_minute_picker)
+
+        hourPicker.minValue = 0
+        hourPicker.maxValue = DecadCalendarHelper.HOURS_IN_DAY - 1
+        hourPicker.value = decimalHour
+        hourPicker.wrapSelectorWheel = true
+        hourPicker.setFormatter { "%02d".format(it) }
+
+        minutePicker.minValue = 0
+        minutePicker.maxValue = DecadCalendarHelper.MINUTES_IN_HOUR - 1
+        minutePicker.value = decimalMinute
+        minutePicker.wrapSelectorWheel = true
+        minutePicker.setFormatter { "%02d".format(it) }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(org.fossify.commons.R.string.select_time))
+            .setView(contentView)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val (hour, minute) = DecadCalendarHelper.getStandardTimeFromDecimal(hourPicker.value, minutePicker.value)
+                callback(hour, minute)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private val startDateSetListener =
@@ -1969,19 +1942,10 @@ class EventActivity : SimpleActivity() {
             dateSet(year, monthOfYear, dayOfMonth, true)
         }
 
-    private val startTimeSetListener =
-        TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-            timeSet(hourOfDay, minute, true)
-        }
-
     private val endDateSetListener =
         DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
             dateSet(year, monthOfYear, dayOfMonth, false)
         }
-
-    private val endTimeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-        timeSet(hourOfDay, minute, false)
-    }
 
     private fun dateSet(year: Int, month: Int, day: Int, isStart: Boolean) {
         if (isStart) {

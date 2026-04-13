@@ -1,13 +1,11 @@
 package org.fossify.calendar.activities
 
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
 import org.fossify.calendar.R
 import org.fossify.calendar.databinding.ActivityTaskBinding
 import org.fossify.calendar.dialogs.DeleteEventDialog
@@ -44,6 +42,7 @@ import org.fossify.calendar.helpers.EVENT_ID
 import org.fossify.calendar.helpers.EVENT_OCCURRENCE_TS
 import org.fossify.calendar.helpers.FLAG_ALL_DAY
 import org.fossify.calendar.helpers.FLAG_TASK_COMPLETED
+import org.fossify.calendar.helpers.DecadCalendarHelper
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.IS_DUPLICATE_INTENT
 import org.fossify.calendar.helpers.IS_NEW_EVENT
@@ -85,9 +84,7 @@ import org.fossify.commons.extensions.getFormattedMinutes
 import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.getProperTextColor
-import org.fossify.commons.extensions.getTimePickerDialogTheme
 import org.fossify.commons.extensions.hideKeyboard
-import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.isGone
 import org.fossify.commons.extensions.openNotificationSettings
 import org.fossify.commons.extensions.removeBit
@@ -706,34 +703,8 @@ class TaskActivity : SimpleActivity() {
 
     private fun setupTime() {
         hideKeyboard()
-        if (isDynamicTheme()) {
-            val timeFormat = if (config.use24HourFormat) {
-                TimeFormat.CLOCK_24H
-            } else {
-                TimeFormat.CLOCK_12H
-            }
-
-            val timePicker = MaterialTimePicker.Builder()
-                .setTimeFormat(timeFormat)
-                .setHour(mTaskDateTime.hourOfDay)
-                .setMinute(mTaskDateTime.minuteOfHour)
-                .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
-                .build()
-
-            timePicker.addOnPositiveButtonClickListener {
-                timeSet(timePicker.hour, timePicker.minute)
-            }
-
-            timePicker.show(supportFragmentManager, "")
-        } else {
-            TimePickerDialog(
-                this,
-                getTimePickerDialogTheme(),
-                timeSetListener,
-                mTaskDateTime.hourOfDay,
-                mTaskDateTime.minuteOfHour,
-                config.use24HourFormat
-            ).show()
+        showDecimalTimePicker(mTaskDateTime.hourOfDay, mTaskDateTime.minuteOfHour) { hour, minute ->
+            timeSet(hour, minute)
         }
     }
 
@@ -742,14 +713,39 @@ class TaskActivity : SimpleActivity() {
             dateSet(year, monthOfYear, dayOfMonth)
         }
 
-    private val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-        timeSet(hourOfDay, minute)
-    }
-
     private fun dateSet(year: Int, month: Int, day: Int) {
         mTaskDateTime = mTaskDateTime.withDate(year, month + 1, day)
         updateDateText()
         checkRepeatRule()
+    }
+
+    private fun showDecimalTimePicker(currentHour: Int, currentMinute: Int, callback: (hour: Int, minute: Int) -> Unit) {
+        val (decimalHour, decimalMinute) = DecadCalendarHelper.getDecimalTime(currentHour, currentMinute)
+        val contentView = layoutInflater.inflate(R.layout.dialog_decimal_time_picker, null)
+        val hourPicker = contentView.findViewById<android.widget.NumberPicker>(R.id.decimal_hour_picker)
+        val minutePicker = contentView.findViewById<android.widget.NumberPicker>(R.id.decimal_minute_picker)
+
+        hourPicker.minValue = 0
+        hourPicker.maxValue = DecadCalendarHelper.HOURS_IN_DAY - 1
+        hourPicker.value = decimalHour
+        hourPicker.wrapSelectorWheel = true
+        hourPicker.setFormatter { "%02d".format(it) }
+
+        minutePicker.minValue = 0
+        minutePicker.maxValue = DecadCalendarHelper.MINUTES_IN_HOUR - 1
+        minutePicker.value = decimalMinute
+        minutePicker.wrapSelectorWheel = true
+        minutePicker.setFormatter { "%02d".format(it) }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(org.fossify.commons.R.string.select_time))
+            .setView(contentView)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val (hour, minute) = DecadCalendarHelper.getStandardTimeFromDecimal(hourPicker.value, minutePicker.value)
+                callback(hour, minute)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun timeSet(hours: Int, minutes: Int) {
