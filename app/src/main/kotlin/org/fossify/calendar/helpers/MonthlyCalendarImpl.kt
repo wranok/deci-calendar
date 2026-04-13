@@ -9,11 +9,9 @@ import org.fossify.calendar.interfaces.MonthlyCalendar
 import org.fossify.calendar.models.DayMonthly
 import org.fossify.calendar.models.Event
 import org.joda.time.DateTime
-import kotlin.math.min
 
 class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
     private val DAYS_CNT = 42
-    private val YEAR_PATTERN = "YYYY"
 
     private val mToday: String = DateTime().toString(Formatter.DAYCODE_PATTERN)
     private var mEvents = ArrayList<Event>()
@@ -22,8 +20,9 @@ class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
 
     fun updateMonthlyCalendar(targetDate: DateTime) {
         mTargetDate = targetDate
-        val startTS = mTargetDate.minusDays(7).seconds()
-        val endTS = mTargetDate.plusDays(43).seconds()
+        val targetInfo = DecadCalendarHelper.getMonthInfo(mTargetDate)
+        val startTS = targetInfo.startDate.minusDays(7).seconds()
+        val endTS = targetInfo.endDate.plusDays(7).seconds()
         context.eventsHelper.getEvents(startTS, endTS) {
             gotEvents(it)
         }
@@ -35,50 +34,50 @@ class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
 
     fun getDays(markDaysWithEvents: Boolean) {
         val days = ArrayList<DayMonthly>(DAYS_CNT)
-        val firstDayOfMonth = mTargetDate.withDayOfMonth(1)
-        val firstDayIndex = context.getProperDayIndexInWeek(firstDayOfMonth)
+        val currentMonth = DecadCalendarHelper.getMonthInfo(mTargetDate)
+        val previousMonth = DecadCalendarHelper.getMonthInfo(currentMonth.startDate.minusDays(1))
 
-        val currMonthDays = mTargetDate.dayOfMonth().maximumValue
-        val prevMonthDays = mTargetDate.minusMonths(1).dayOfMonth().maximumValue
+        val firstDayIndex = context.getProperDayIndexInWeek(currentMonth.startDate)
+        val currMonthDays = currentMonth.length
+        val prevMonthDays = previousMonth.length
 
-        var isThisMonth = false
-        var isToday: Boolean
         var value = prevMonthDays - firstDayIndex + 1
-        var curDay = mTargetDate
+        var isThisMonth = false
+        var cursorDate = previousMonth.startDate.plusDays(value - 1)
 
         for (i in 0 until DAYS_CNT) {
             when {
                 i < firstDayIndex -> {
                     isThisMonth = false
-                    curDay = mTargetDate.withDayOfMonth(1).minusMonths(1)
+                    cursorDate = previousMonth.startDate.plusDays(value - 1)
                 }
 
                 i == firstDayIndex -> {
                     value = 1
                     isThisMonth = true
-                    curDay = mTargetDate
+                    cursorDate = currentMonth.startDate
                 }
 
                 value == currMonthDays + 1 -> {
                     value = 1
                     isThisMonth = false
-                    curDay = mTargetDate.withDayOfMonth(1).plusMonths(1)
+                    cursorDate = currentMonth.endDate.plusDays(1)
                 }
             }
 
-            isToday = isToday(curDay, value)
-
-            val newDay = curDay.withDayOfMonth(value)
+            val newDay = if (isThisMonth) currentMonth.startDate.plusDays(value - 1) else cursorDate
             val dayCode = Formatter.getDayCodeFromDateTime(newDay)
-            val day = DayMonthly(value, isThisMonth, isToday, dayCode, newDay.weekOfWeekyear, ArrayList(), i, context.isWeekendIndex(i))
+            val day = DayMonthly(value, isThisMonth, isToday(newDay), dayCode, newDay.weekOfWeekyear, ArrayList(), i, context.isWeekendIndex(i))
             days.add(day)
+
             value++
+            cursorDate = cursorDate.plusDays(1)
         }
 
         if (markDaysWithEvents) {
             markDaysWithEvents(days)
         } else {
-            callback.updateMonthlyCalendar(context, monthName, days, false, mTargetDate)
+            callback.updateMonthlyCalendar(context, monthName, days, false, currentMonth.startDate)
         }
     }
 
@@ -108,23 +107,15 @@ class MonthlyCalendarImpl(val callback: MonthlyCalendar, val context: Context) {
         days.filter { dayEvents.keys.contains(it.code) }.forEach {
             it.dayEvents = dayEvents[it.code]!!
         }
-        callback.updateMonthlyCalendar(context, monthName, days, true, mTargetDate)
+        callback.updateMonthlyCalendar(context, monthName, days, true, DecadCalendarHelper.getMonthInfo(mTargetDate).startDate)
     }
 
-    private fun isToday(targetDate: DateTime, curDayInMonth: Int): Boolean {
-        val targetMonthDays = targetDate.dayOfMonth().maximumValue
-        return targetDate.withDayOfMonth(min(curDayInMonth, targetMonthDays)).toString(Formatter.DAYCODE_PATTERN) == mToday
+    private fun isToday(targetDate: DateTime): Boolean {
+        return targetDate.toString(Formatter.DAYCODE_PATTERN) == mToday
     }
 
     private val monthName: String
-        get() {
-            var month = Formatter.getMonthName(context, mTargetDate.monthOfYear)
-            val targetYear = mTargetDate.toString(YEAR_PATTERN)
-            if (targetYear != DateTime().toString(YEAR_PATTERN)) {
-                month += " $targetYear"
-            }
-            return month
-        }
+        get() = DecadCalendarHelper.getMonthInfo(mTargetDate).title
 
     private fun gotEvents(events: ArrayList<Event>) {
         mEvents = events
