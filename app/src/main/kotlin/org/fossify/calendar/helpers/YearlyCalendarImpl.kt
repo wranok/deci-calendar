@@ -42,8 +42,13 @@ class YearlyCalendarImpl(val callback: YearlyCalendar, val context: Context, val
     }
 
     private fun markDay(arr: SparseArray<ArrayList<DayYearly>>, dateTime: DateTime, event: Event) {
-        val month = dateTime.monthOfYear
-        val day = dateTime.dayOfMonth
+        val monthInfo = DecadCalendarHelper.getMonthInfo(dateTime)
+        val month = monthInfo.monthIndex
+        if (month !in 1..12) {
+            return
+        }
+
+        val day = ((dateTime.withTimeAtStartOfDay().millis - monthInfo.startDate.millis) / (24 * 60 * 60 * 1000L)).toInt() + 1
 
         if (arr[month] == null) {
             arr.put(month, ArrayList())
